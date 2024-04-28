@@ -52,18 +52,23 @@ class HomePage extends StatelessWidget {
 
   // Xây dựng ô danh sách riêng cho người dùng
   Widget _buildUserListItem(Map<String, dynamic> userData, BuildContext context) {
-    return UserTile(
-      text: userData['email'],
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatPage(
-              receiverEmail: userData['email'],
+    // Hiển thị tất cả người dùng, ngoại trừ người dùng hiện tại
+    if (userData["email"] != _authService.getCurrentUser()!.email) {
+      return UserTile(
+        text: userData['email'],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatPage(
+                receiverEmail: userData['email'],
+              ),
             ),
-          ),
-        ); //! Chuyển tới trang chat (CHAT)
-      },
-    );
+          ); //! Chuyển tới trang chat (CHAT)
+        },
+      );
+    } else {
+      return Container();
+    }
   }
 }

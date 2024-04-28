@@ -8,6 +8,11 @@ class AuthService {
 
   /* ----------------------------------------------------------------------- */
 
+  //! Get current user
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
   //! Sign in (Login)
   Future<UserCredential> signInWithEmailPassword(String email, String password) async {
     try {
