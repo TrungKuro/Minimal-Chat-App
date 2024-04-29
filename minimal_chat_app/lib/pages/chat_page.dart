@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:minimal_chat_app/components/chat_bubble.dart';
 import 'package:minimal_chat_app/components/my_textfield.dart';
 import 'package:minimal_chat_app/services/auth/auth_service.dart';
 import 'package:minimal_chat_app/services/chat/chat_service.dart';
@@ -35,8 +36,12 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: Text(receiverEmail),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Theme.of(context).colorScheme.primary,
+        elevation: 0,
       ),
       body: Column(
         children: [
@@ -80,24 +85,52 @@ class ChatPage extends StatelessWidget {
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Text(data['message']);
+    // Kiểm tra gói tin này có phải là của người dùng hiện tại, tức người gửi hay ko?
+    bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
+
+    // Căn bên phải, nếu người gửi là người dùng hiện tại, và ngược lại
+    var alignment = isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
+
+    return Container(
+      alignment: alignment,
+      child: ChatBubble(
+        message: data['message'],
+        isCurrentUser: isCurrentUser,
+      ),
+    );
   }
 
   // Build message user
   Widget _buildUserInput() {
-    return Row(
-      children: [
-        // TextField should take of most the space
-        Expanded(
-          child: MyTextField(
-            controller: _messageController,
-            hintText: 'Type a messages.',
-            obscureText: false,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 50),
+      child: Row(
+        children: [
+          // TextField should take of most the space
+          Expanded(
+            child: MyTextField(
+              controller: _messageController,
+              hintText: 'Type a messages.',
+              obscureText: false,
+            ),
           ),
-        ),
-        // Send button
-        IconButton(onPressed: sendMessage, icon: const Icon(Icons.arrow_upward)),
-      ],
+          // Send button
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.amber,
+              shape: BoxShape.circle,
+            ),
+            margin: const EdgeInsets.only(right: 25),
+            child: IconButton(
+              onPressed: sendMessage,
+              icon: const Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
