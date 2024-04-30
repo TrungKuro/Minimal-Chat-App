@@ -9,7 +9,7 @@ class ChatPage extends StatefulWidget {
   final String receiverEmail;
   final String receiverID;
 
-  ChatPage({
+  const ChatPage({
     super.key,
     required this.receiverEmail,
     required this.receiverID,
@@ -29,22 +29,27 @@ class _ChatPageState extends State<ChatPage> {
 
   //! For TextField focus
   FocusNode myFocusNode = FocusNode();
+  //
   @override
   void initState() {
     super.initState();
-
     // Add listener to focus node
     myFocusNode.addListener(() {
       if (myFocusNode.hasFocus) {
         // Cause a delay so that the keyboard has time to show up
-        // Then the amount of remaining space will be caculated
+        // Then the amount of remaining space will be calculated
         // Then scroll down
         Future.delayed(
-          const Duration(microseconds: 500),
+          const Duration(milliseconds: 500),
           () => scrollDown(),
         );
       }
     });
+    // Wait a bit for ListView to be build, then scroll to the bottom
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => scrollDown(),
+    );
   }
 
   @override
@@ -73,6 +78,8 @@ class _ChatPageState extends State<ChatPage> {
       // After send, we must clear data in TextField
       _messageController.clear();
     }
+    // Just scroll down auto to view new message
+    scrollDown();
   }
 
   @override
